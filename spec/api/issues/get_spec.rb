@@ -13,6 +13,15 @@ describe 'GET /api/issues' do
     expect(summaries).to match_array(Issue.all.map(&:summary))
   end
 
+  let!(:covfefe_issue) { create :issue, summary: 'Despite the constant negative press covfefe' }
+  it 'should search by summary' do
+    get '/api/issues?summary=covfefe'
+
+    summaries = response_body.map { |issue| issue[:summary] }
+
+    expect(summaries).to match_array([covfefe_issue.summary])
+  end
+
   after :all do
     User.delete_all
     Issue.delete_all
