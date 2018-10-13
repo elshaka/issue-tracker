@@ -42,6 +42,16 @@ describe 'GET /api/issues' do
     expect(assignee_names).to match_array([test_assignee.name])
   end
 
+  it 'should retrieve paginated issues' do
+    page = 2
+    page_size = 10
+    get "/api/issues?page=#{page}&page_size=#{page_size}"
+
+    summary_ids = response_body.map { |issue| issue[:id] }
+
+    expect(summary_ids).to match_array(Issue.offset((page - 1) * page_size).limit(page_size).pluck(:id))
+  end
+
   after :all do
     User.delete_all
     Issue.delete_all
